@@ -26,7 +26,6 @@ KEYWORDS = ["Failed password", "Connection closed", "Accepted password", "Authen
 # For cohere api
 cohere_api_key = "W6ifl65lD4aRHaNfP6yPB62xaZCGfIZ7x24TsaRE"
 
-
 # Mailtrap configuration
 mailtrap_token = "9104d9914265124a26d5f903eda72ab7"
 recipient = 'funyaq@mailto.plus'
@@ -34,73 +33,6 @@ recipient = 'funyaq@mailto.plus'
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 
-
-# Function to simulate IoT device generating logs
-def generate_iot_logs():
-
-    while True:
-        log = get_random_log()
-        # event = create_misp_event(log)
-
-        # add_attibutes_to_event(event=event, log=log)
-
-        # mitigation = generate_mitigation_info(log)
-
-        # send_email(subject=subject, body=mitigation)
-
-        time.sleep(10)
-
-# Function to generate a random IoT log entry
-def get_random_log():
-    """Get random log entry"""
-
-    log_templates = [
-        "May 02 12:50:49 raspberry sshd[5792]: Blocked Potential SSH Brute Force attack for pi from 192.168.1.254 port 42702 ssh2",
-        "May 02 12:50:49 raspberry sshd[5803]: Blocked Potential SSH Brute Force attack for pi from 192.168.1.254 port 42828 ssh2",
-        "May 02 12:50:50 raspberry sshd[5792]: Connection closed by authenticating user pi 192.168.1.254 port 42702 [preauth]",
-        "May 02 12:52:17 raspberry sshd[5825]: Blocked Potential SSH Brute Force attack for pi from 192.168.1.254 port 40382 ssh2",
-        "May 02 12:52:27 raspberry sshd[5825]: Connection closed by authenticating user pi 192.168.1.254 port 40382 [preauth]",
-        "May 02 12:52:49 raspberry sshd[5827]: Accepted password for pi from 192.168.1.254 port 52780 ssh2"
-    ]
-
-    return random.choice(log_templates)
-
-def date_and_timestamp():
-    date = datetime.date.today().isoformat()
-    timestamp = str(int(time.time()))
-    return date, timestamp
-
-# Function to generate a random IoT event
-def generate_random_event():
-	#  IoT device activities and events gnerator
-    event_types = ["authentication_attempt", "sensor_reading", "dos_attack", "malware_activity", "failed_authentication"]
-    event_type = random.choice(event_types)
-    
-    if event_type == "dos_attack":
-        event_details = "DDoS attack detected from multiple sources"
-    elif event_type == "malware_activity":
-        event_details = "Mirai botnet activity detected"
-    elif event_type == "failed_authentication":
-        event_details = "Brute force attack"
-    else:
-        event_details = "Normal IoT device operation"
-
-    date_time = date_and_timestamp()
-        
-    date = date_time[0]
-    timestamp = date_time[1]
-    device_id = "iot_device_1" 
-    
-    return {
-        "date": date,
-        "timestamp": timestamp,
-        "device_id": device_id,
-        "event_type": event_type,
-        "event_details": event_details,
-	}
-
-def uuid_generator():
-    return str(uuid.uuid4())
 
 def create_misp_event(log):
     """Create a MISP event from the log."""
@@ -124,7 +56,6 @@ def create_misp_event(log):
     result = misp.add_event(event, pythonify=True)
  
     return result
-
 
 
 def add_attributes_to_event(event, log):
@@ -201,67 +132,6 @@ def add_attributes_to_event(event, log):
     return result
 
 
-def create_misp_event_prev(log):
-    """Create a misp event"""
-
-    event = MISPEvent()
-    event_info = "Important security log"
-
-    for keyword in KEYWORDS:
-        if (keyword == "Failed password" 
-            or keyword == "Authentication failure" 
-            and keyword 
-            in log):
-            event_info = "Auth: Authentication attempt"
-        # elif keyword == "Authentication failure" and keyword in log:
-        #     event_info = "Observing: Possible threat"
-
-    event.info = event_info
-    event.org_id = "1"
-    event.orgc_id = "1"
-    event.distribution = "0"
-    event.sharing_group_id = "1"
-    event.proposal_email_lock = True
-    event.locked = True
-    event.threat_level_id = "2"
-    event.disable_correlation = False
-    event.event_creator_email = "prof.addy98@gmai.com"
-
-    result = misp.add_event(event, pythonify=True)
-    print(result)
-    return result
-    
-# Function to add attributes to a MISP event based on a log entry
-def add_attibutes_to_event_prev(event, log):
-    # Extract IP addresses, ports, and keywords from the log entry
-    ip_addresses = re.findall(r'[0-9]+(?:\.[0-9]+){3}', log)
-    # ports = re.findall(r'port (\d+)', log)
-
-    # attribute_uuid = uuid_generator()
-    comments = ["logged source ip", "logged port"]
-    type = ["ip-dst", "ip-src"]
-    category = "Internal reference"
-
-    # Add extracted information as attributes to the event
-    if ip_addresses:
-        for ip in ip_addresses:
-            attribute = MISPAttribute()
-            attribute.value = ip
-            attribute.category = category
-            attribute.type = "ip-src"
-            attribute.comment = "logged source ip"
-            event.add_attribute(**attribute)
-    
-    if "ssh" in log:
-        attribute = MISPAttribute()
-        attribute.value = "ssh"
-        attribute.type = "text"
-        attribute.category = "Network activity"
-        event.add_attribute(**attribute)
-
-    result = misp.update_event(event)
-    return result
-
 def generate_mitigation_info(log):
     """Generate mitigation info by sendind the log entry to the LLM"""
 
@@ -291,6 +161,7 @@ def send_email(subject, body):
     print(response)  # {'success': True, 'message_ids': ['4cf9e4f0-183a-11ef-0000-f18fdd699b42']}
     return response
 
+
 def fetch_iocs():
     events = misp.search(controller='events', return_format='json', published=True)
     iocs = set()
@@ -313,7 +184,7 @@ def sid_generator():
         yield sid
 
 
-def create_suricata_rules_with_iocs(iocs, output_file='C:/Users/addis/Downloads/misp.rules'):
+def create_suricata_rules_with_iocs(iocs, output_file='/var/lib/suricata/rules/misp.rules'):
     sid_gen = sid_generator()
     with open(output_file, "a") as f:
         for ioc in iocs:
@@ -327,28 +198,6 @@ def create_suricata_rules_with_iocs(iocs, output_file='C:/Users/addis/Downloads/
                 # DNS Blocking Rule
                 f.write(f"drop dns any any -> any any (msg:\"IoC: Blocked malicious DNS query for {ioc}\"; content:\"{ioc}\"; dns_query; sid:{next(sid_gen)}; rev:1;)\n")
     return "Suricata rules generated successfully."
-
-
-# Save IOCs to Suricata rules file
-def create_suricata_rules_with_iocs_prev(iocs, output_file='C:/Users/addis/Downloads/misp.rules'):
-    sid_gen = sid_generator() 
-    with open(output_file, 'w') as f:
-        for ioc in iocs:
-            try:
-                parsed = urlparse(ioc)
-                try:
-                    ipaddress.ip_address(ioc)
-                    f.write(f'''reject ip any any -> any any (msg:"Potential Malcious {ioc} ip - Dropped"; xbits:isset, myblocklist, 
-                            track ip_src; sid:{next(sid_gen)}; rev:1;)\n''')
-                except ValueError:
-                    if parsed.scheme in ['http', 'https'] and parsed.netloc:
-                        f.write(f'''reject http any any -> any any (msg:"Malicious URL {ioc} - Dropped"; content:"{ioc}"; nocase; xbits:set, 
-                                myblocklist, track ip_src, expire 3600; classtype:policy-violation; sid:{next(sid_gen)}; rev:1; )\n''')
-                    elif validators.domain(ioc):
-                        f.write(f'''reject dns any any -> any any (msg:"Malicious Domain {ioc} - Dropped"; content:"{ioc}"; sid:{next(sid_gen)}; rev:1;)\n''')
-            except ValueError:
-                continue
-
 
 
 def is_high_priority_alert(log, min_severity=2):
@@ -390,9 +239,6 @@ def fetch_suricata_logs_with_higher_priority(file_path='/var/log/suricata/eve.js
 
 
 if __name__ == "__main__":
-    # log = "June 06 11:19:28 raspberry sshd[5825]: Blocked Potential SSH Brute Force attack for pi from 192.168.1.254 port 40382 ssh2"
-    # subject = 'Possible Threat Detected'
-
     # For IoCs
     iocs = fetch_iocs()
 
