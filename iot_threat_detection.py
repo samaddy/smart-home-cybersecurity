@@ -9,25 +9,29 @@ import uuid
 import json
 import logging
 import ipaddress
-import validators
+import os
+
 
 from urllib.parse import urlparse
 from pymisp import PyMISP, MISPEvent, MISPAttribute
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 # Misp configuration
 MISP_URL = "https://192.168.1.63/"
-MISP_API_KEY = "5WzOxUzBOQ3XIdYp89Ykhz7zzgYnu7vbuURshpu9"
+MISP_API_KEY = os.getenv('MISP_API_KEY')
 
 # Initialize misp
 misp = PyMISP(MISP_URL, MISP_API_KEY, ssl=False)
 
-KEYWORDS = ["Failed password", "Connection closed", "Accepted password", "Authentication failure"]
 
 # For cohere api
-cohere_api_key = "W6ifl65lD4aRHaNfP6yPB62xaZCGfIZ7x24TsaRE"
+cohere_api_key = os.getenv('COHERE_API_KEY')
 
 # Mailtrap configuration
-mailtrap_token = "9104d9914265124a26d5f903eda72ab7"
+mailtrap_token = os.getenv('MAILTRAP_TOKEN')
 recipient = 'funyaq@mailto.plus'
 
 # Set up logging
