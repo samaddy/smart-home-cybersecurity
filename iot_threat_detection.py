@@ -167,6 +167,8 @@ def send_email(subject, body):
 
 
 def fetch_iocs():
+    """Fetch IoCs from MISP instance"""
+
     events = misp.search(controller='events', return_format='json', published=True)
     iocs = set()
 
@@ -189,6 +191,8 @@ def sid_generator():
 
 
 def create_suricata_rules_with_iocs(iocs, output_file='/var/lib/suricata/rules/misp.rules'):
+    """Create suricata rules"""
+
     sid_gen = sid_generator()
     with open(output_file, "a") as f:
         for ioc in iocs:
@@ -218,6 +222,7 @@ def is_high_priority_alert(log, min_severity=2):
 
 
 def fetch_suricata_logs_with_higher_priority(file_path='/var/log/suricata/eve.json', min_severity=2):
+    """Fetch logs from suricata log file to create MISP event"""
     high_priority_logs = []
     seen_keys = set()  # To track unique (src_ip, signature) pairs
 
