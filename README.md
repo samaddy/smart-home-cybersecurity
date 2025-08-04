@@ -1,6 +1,6 @@
 # Threat Intelligence-Driven Cybersecurity for IoT Ecosystems
 
-This project presents an approach to improving the cybersecurity of smart home devices through the integration of threat intelligence, using the Raspberry Pi as a prototype smart home device. This implementation combines an Intrusion Detection and Prevention System (IDS/IPS) with real-time threat intelligence. To increase the ability to detect and respond to threats.
+This project presents an approach to improving the cybersecurity of smart home devices through the integration of threat intelligence, using the Raspberry Pi as a prototype smart home device. This implementation combines an Intrusion Detection and Prevention System (IDS/IPS) with real-time threat intelligence. To increase the ability to detect and respond to threats. [Publication](https://doi.org/10.1016/j.procs.2025.03.074)
 
 
 ## Table of Contents
